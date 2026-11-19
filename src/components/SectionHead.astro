@@ -1,0 +1,26 @@
+---
+interface Props {
+  index: string;
+  label: string;
+  title: string;
+  text?: string;
+  titleId: string;
+  /** Texto à direita da régua (ex.: referência da folha). */
+  meta?: string;
+}
+
+const { index, label, title, text, titleId, meta } = Astro.props;
+---
+
+<header class="section-head" data-section-head>
+  <div class="ruler" aria-hidden="true">
+    <span class="ruler__ticks" data-ruler-ticks></span>
+    <span class="ruler__line" data-ruler-line></span>
+  </div>
+  <div class="section-head__meta t-label">
+    <p><span class="section-head__index">{index}</span> — {label}</p>
+    {meta && <p aria-hidden="true">{meta}</p>}
+  </div>
+  <h2 class="t-h2 section-head__title" id={titleId}>{title}</h2>
+  {text && <p class="t-lead section-head__text">{text}</p>}
+</header>

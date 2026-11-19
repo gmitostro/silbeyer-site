@@ -1,0 +1,450 @@
+---
+/**
+ * Abertura "Da matéria à proteção" (~3 s).
+ * 1. Matéria      — superfície de madeira (SVG procedural) revelada por um feixe de luz
+ * 2. Engenharia   — linhas técnicas, cotas e o envelope da embalagem
+ * 3. Construção   — esquis, painéis, sarrafos e tampa se encaixam em sequência
+ * 4. Marca        — a composição revela a marca e se abre para o hero
+ *
+ * Toda a sequência é CSS: começa no primeiro quadro, sem depender do JS.
+ * O JS só trata "pular", interação do usuário e a remoção do nó ao final.
+ * Só aparece na primeira visita da sessão (classe definida no <head>).
+ */
+import CrateDrawing from './CrateDrawing.astro';
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+---
+
+<div class="intro surface-deep" id="intro" data-intro>
+  <div class="intro__stage" aria-hidden="true">
+    <svg class="intro__grain" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" focusable="false">
+      <filter id="intro-woodgrain" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+        <feTurbulence type="fractalNoise" baseFrequency="0.0032 0.105" numOctaves="4" seed="11"></feTurbulence>
+        <feComponentTransfer>
+          <feFuncR type="table" tableValues="0 .55 .22 .72 .38 .92 .52 1"></feFuncR>
+        </feComponentTransfer>
+        <feColorMatrix
+          type="matrix"
+          values="0.22 0 0 0 0.13  0.15 0 0 0 0.095  0.11 0 0 0 0.075  0 0 0 0 1"></feColorMatrix>
+      </filter>
+      <rect x="-150" y="-150" width="1500" height="1100" filter="url(#intro-woodgrain)" transform="rotate(-7 600 400)"
+      ></rect>
+    </svg>
+    <div class="intro__beam"></div>
+    <div class="intro__glow"></div>
+    <div class="intro__vignette"></div>
+
+    <ol class="intro__phases t-label" role="list">
+      <li><span>01</span> Matéria</li>
+      <li><span>02</span> Engenharia</li>
+      <li><span>03</span> Construção</li>
+      <li><span>04</span> Proteção</li>
+    </ol>
+
+    <div class="intro__compose">
+      <CrateDrawing labels="numbers" class="intro__crate" />
+      <div class="intro__brand">
+        <span class="intro__rule"></span>
+        <span class="intro__logo"><Logo size="intro" /></span>
+      </div>
+    </div>
+  </div>
+
+  <button class="intro__skip" type="button" data-intro-skip>
+    <span>Pular introdução</span>
+    <Icon name="arrow-right" class="btn__arrow" />
+  </button>
+</div>
+
+<style>
+  .intro {
+    display: none;
+  }
+
+  :global(.intro-play) .intro,
+  :global(.intro-static) .intro {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-intro);
+    overflow: hidden;
+    background-color: var(--sb-charcoal-deep);
+  }
+
+  .intro__stage {
+    position: absolute;
+    inset: 0;
+  }
+
+  .intro__grain {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .intro__beam {
+    position: absolute;
+    top: -25%;
+    bottom: -25%;
+    left: 0;
+    width: 34%;
+    background: linear-gradient(
+      90deg,
+      rgb(240 205 170 / 0) 0%,
+      rgb(240 205 170 / 0.18) 30%,
+      rgb(246 214 182 / 0.62) 50%,
+      rgb(240 205 170 / 0.18) 70%,
+      rgb(240 205 170 / 0) 100%
+    );
+    mix-blend-mode: overlay;
+    transform: translateX(-130%) rotate(14deg);
+    will-change: transform;
+  }
+
+  .intro__glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 60% 55% at 50% 46%, rgb(199 165 139 / 0.24), rgb(199 165 139 / 0) 70%);
+    mix-blend-mode: soft-light;
+  }
+
+  .intro__vignette {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 45%, rgb(20 14 11 / 0) 35%, rgb(20 14 11 / 0.78) 100%);
+  }
+
+  .intro__phases {
+    position: absolute;
+    top: calc(1.25rem + env(safe-area-inset-top));
+    left: var(--gutter);
+    margin: 0;
+    padding: 0;
+    color: var(--sb-almond);
+    list-style: none;
+  }
+
+  .intro__phases li {
+    position: absolute;
+    white-space: nowrap;
+    opacity: 0;
+  }
+
+  .intro__phases span {
+    color: var(--sb-beige);
+    margin-right: 0.5em;
+  }
+
+  .intro__compose {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(1.25rem, 3vh, 2.5rem);
+    padding: 4rem var(--gutter) 5rem;
+  }
+
+  .intro__compose :global(.intro__crate) {
+    width: min(78vw, 52vh * 1.03, 560px);
+  }
+
+  .intro__brand {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .intro__rule {
+    width: min(70vw, 26rem);
+    height: 9px;
+    background:
+      linear-gradient(var(--sb-almond), var(--sb-almond)) left center / 100% 1px no-repeat,
+      linear-gradient(var(--sb-almond), var(--sb-almond)) left center / 1px 100% no-repeat,
+      linear-gradient(var(--sb-almond), var(--sb-almond)) right center / 1px 100% no-repeat;
+    opacity: 0.7;
+  }
+
+  .intro__skip {
+    position: absolute;
+    right: var(--gutter);
+    bottom: calc(1.25rem + env(safe-area-inset-bottom));
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-height: 44px;
+    padding: 0 1rem;
+    border: 1px solid rgb(199 165 139 / 0.45);
+    border-radius: var(--radius);
+    background: rgb(38 29 24 / 0.6);
+    color: var(--sb-beige);
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: border-color var(--dur-base) var(--ease-standard);
+  }
+
+  .intro__skip:hover {
+    border-color: var(--sb-beige);
+  }
+
+  .intro__skip:hover :global(.btn__arrow) {
+    transform: translateX(3px);
+  }
+
+  .intro__skip:focus-visible {
+    outline-color: var(--sb-beige);
+  }
+
+  /* ======================================================================
+     Linha do tempo (somente com movimento permitido)
+     ====================================================================== */
+
+  :global(.intro-play) .intro {
+    animation: intro-exit 560ms cubic-bezier(0.76, 0, 0.24, 1) 2.45s forwards;
+  }
+
+  :global(.intro-play) .intro__grain {
+    animation: i-fade 600ms var(--ease-standard) both;
+  }
+
+  :global(.intro-play) .intro__beam {
+    animation: i-beam 1.35s cubic-bezier(0.45, 0, 0.25, 1) 0.05s both;
+  }
+
+  :global(.intro-play) .intro__glow {
+    animation: i-fade 900ms var(--ease-standard) 0.6s both;
+  }
+
+  :global(.intro-play) .intro__phases li:nth-child(1) {
+    animation: i-phase 520ms linear 0.05s both;
+  }
+  :global(.intro-play) .intro__phases li:nth-child(2) {
+    animation: i-phase 440ms linear 0.55s both;
+  }
+  :global(.intro-play) .intro__phases li:nth-child(3) {
+    animation: i-phase 780ms linear 0.97s both;
+  }
+  :global(.intro-play) .intro__phases li:nth-child(4) {
+    animation: i-phase-last 700ms linear 1.74s both;
+  }
+
+  /* Fase 2 — desenho técnico */
+  :global(.intro-play) .intro :global(.draw) {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: i-draw 520ms var(--ease-out) both;
+  }
+
+  :global(.intro-play) .intro :global(.cr-guides .draw) {
+    animation-duration: 600ms;
+    animation-delay: calc(0.22s + var(--i) * 0.04s);
+  }
+
+  :global(.intro-play) .intro :global(.cr-product .draw) {
+    animation-duration: 420ms;
+    animation-delay: calc(0.4s + var(--i) * 0.02s);
+  }
+
+  :global(.intro-play) .intro :global(.cr-outline .draw) {
+    animation-delay: calc(0.5s + var(--i) * 0.025s);
+  }
+
+  :global(.intro-play) .intro :global(.cr-hidden) {
+    animation: i-fade 300ms var(--ease-standard) 0.58s both;
+  }
+
+  :global(.intro-play) .intro :global(.cr-dim .draw) {
+    animation-duration: 380ms;
+    animation-delay: calc(0.68s + var(--i) * 0.07s);
+  }
+
+  :global(.intro-play) .intro :global(.cr-dim .ln--tick),
+  :global(.intro-play) .intro :global(.cr-dim .dim-label) {
+    animation: i-fade 260ms var(--ease-standard) both;
+    animation-delay: calc(0.88s + var(--i) * 0.07s);
+  }
+
+  /* As linhas de construção recuam quando a madeira assume a cena. */
+  :global(.intro-play) .intro :global(.cr-guides) {
+    animation: i-recede 500ms var(--ease-standard) 1.5s both;
+  }
+
+  :global(.intro-play) .intro :global(.cr-dims) {
+    animation: i-recede-soft 450ms var(--ease-standard) 1.6s both;
+  }
+
+  /* Fase 3 — montagem: cada peça percorre o próprio eixo até o lugar. */
+  :global(.intro-play) .intro :global(.cr-part) {
+    animation: i-place 520ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+
+  :global(.intro-play) .intro :global(.cr-inner) {
+    animation: i-fade 300ms var(--ease-standard) 0.95s both;
+  }
+  :global(.intro-play) .intro :global(.cr-skids) {
+    animation-delay: 0.95s;
+  }
+  :global(.intro-play) .intro :global(.cr-left) {
+    animation-delay: 1.05s;
+  }
+  :global(.intro-play) .intro :global(.cr-right) {
+    animation-delay: 1.15s;
+  }
+  :global(.intro-play) .intro :global(.cr-cleats-l) {
+    animation-duration: 420ms;
+    animation-delay: 1.3s;
+  }
+  :global(.intro-play) .intro :global(.cr-cleats-r) {
+    animation-duration: 420ms;
+    animation-delay: 1.36s;
+  }
+  :global(.intro-play) .intro :global(.cr-lid) {
+    animation-duration: 480ms;
+    animation-delay: 1.5s;
+  }
+  :global(.intro-play) .intro :global(.cr-straps),
+  :global(.intro-play) .intro :global(.cr-marks) {
+    animation: i-fade 260ms var(--ease-standard) 1.78s both;
+  }
+
+  /* Fase 4 — marca */
+  :global(.intro-play) .intro__rule {
+    animation: i-rule 420ms var(--ease-out) 1.78s both;
+  }
+
+  :global(.intro-play) .intro__logo {
+    animation: i-reveal 480ms var(--ease-out) 1.88s both;
+  }
+
+  /* — Pular: encerra rapidamente — */
+  :global(.intro-play) .intro.is-leaving,
+  :global(.intro-static) .intro.is-leaving {
+    animation: intro-out 320ms var(--ease-standard) forwards;
+  }
+
+  /* — Movimento reduzido: quadro estático breve, sem deslocamentos — */
+  :global(.intro-static) .intro {
+    animation: intro-out 300ms linear 1.1s forwards;
+  }
+
+  :global(.intro-static) .intro__beam {
+    display: none;
+  }
+
+  :global(.intro-static) .intro__phases li:nth-child(4) {
+    opacity: 1;
+  }
+
+  @keyframes i-fade {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @keyframes i-draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @keyframes i-beam {
+    from {
+      transform: translateX(-130%) rotate(14deg);
+    }
+    to {
+      transform: translateX(330%) rotate(14deg);
+    }
+  }
+
+  @keyframes i-phase {
+    0% {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    18%,
+    78% {
+      opacity: 1;
+      transform: none;
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+  }
+
+  @keyframes i-phase-last {
+    0% {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    25%,
+    100% {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes i-recede {
+    to {
+      opacity: 0.28;
+    }
+  }
+
+  @keyframes i-recede-soft {
+    to {
+      opacity: 0.5;
+    }
+  }
+
+  @keyframes i-place {
+    from {
+      opacity: 0;
+      transform: translate(var(--fx, 0px), var(--fy, 0px));
+    }
+    55% {
+      opacity: 1;
+    }
+    to {
+      opacity: 1;
+      transform: translate(0, 0);
+    }
+  }
+
+  @keyframes i-rule {
+    from {
+      transform: scaleX(0);
+    }
+  }
+
+  @keyframes i-reveal {
+    from {
+      opacity: 0;
+      clip-path: inset(0 100% 0 0);
+    }
+    to {
+      opacity: 1;
+      clip-path: inset(0 0 0 0);
+    }
+  }
+
+  @keyframes intro-exit {
+    to {
+      transform: translateY(-100%);
+      visibility: hidden;
+    }
+  }
+
+  @keyframes intro-out {
+    to {
+      opacity: 0;
+      visibility: hidden;
+    }
+  }
+</style>

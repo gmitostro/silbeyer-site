@@ -1,0 +1,300 @@
+---
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+import { company, navigation } from '../content/site';
+import { whatsappUrl } from '../lib/whatsapp';
+---
+
+<header class="site-header surface-dark" data-header>
+  <div class="container site-header__bar">
+    <a class="site-header__brand" href="#inicio">
+      <Logo size="header" />
+      <span class="visually-hidden"> — início</span>
+    </a>
+
+    <nav class="site-nav" aria-label="Principal">
+      <ul role="list" class="site-nav__list">
+        {
+          navigation.map((item) => (
+            <li>
+              <a class="site-nav__link" href={item.href} data-nav-link={item.id}>
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <a class="btn btn--small site-header__cta" href={whatsappUrl()} target="_blank" rel="noopener" data-cta="header">
+      <Icon name="whatsapp" class="btn__icon" />
+      <span>Solicitar orçamento</span>
+      <span class="visually-hidden">(abre o WhatsApp em nova aba)</span>
+    </a>
+
+    <button
+      class="menu-toggle"
+      type="button"
+      aria-expanded="false"
+      aria-controls="menu-mobile"
+      data-menu-toggle
+    >
+      <span class="menu-toggle__label" data-menu-label>Menu</span>
+      <Icon name="menu" class="menu-toggle__icon menu-toggle__icon--open" />
+      <Icon name="close" class="menu-toggle__icon menu-toggle__icon--close" />
+    </button>
+  </div>
+
+  <div class="mobile-menu surface-deep" id="menu-mobile" data-menu hidden>
+    <nav aria-label="Menu principal" class="container mobile-menu__inner">
+      <ul role="list" class="mobile-menu__list">
+        {
+          navigation.map((item, i) => (
+            <li style={`--i:${i}`}>
+              <a class="mobile-menu__link" href={item.href} data-menu-link>
+                <span class="mobile-menu__index t-label">0{i + 1}</span>
+                <span>{item.label}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <div class="mobile-menu__footer">
+        <a class="btn" href={whatsappUrl()} target="_blank" rel="noopener" data-cta="menu">
+          <Icon name="whatsapp" class="btn__icon" />
+          <span>Solicitar orçamento</span>
+          <span class="visually-hidden">(abre o WhatsApp em nova aba)</span>
+        </a>
+        <a class="mobile-menu__phone" href={company.phone.href}>
+          <Icon name="phone" class="btn__icon" />
+          <span>{company.phone.display}</span>
+        </a>
+        <p class="mobile-menu__address t-small">
+          {company.address.street} — {company.address.city}, {company.address.state}, CEP {company.address.postalCode}
+        </p>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: var(--z-header);
+    background-color: transparent;
+    border-bottom: 1px solid transparent;
+    transition:
+      background-color var(--dur-slow) var(--ease-standard),
+      border-color var(--dur-slow) var(--ease-standard);
+  }
+
+  .site-header.is-solid,
+  .site-header.is-open {
+    background-color: var(--sb-charcoal);
+    border-bottom-color: var(--line);
+  }
+
+  .site-header__bar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    height: var(--header-h);
+  }
+
+  @media (min-width: 64em) {
+    .site-header__bar {
+      gap: var(--space-5);
+    }
+  }
+
+  .site-header__brand {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    margin-right: auto;
+    text-decoration: none;
+  }
+
+  .site-nav {
+    display: none;
+  }
+
+  .site-header__cta {
+    display: none;
+  }
+
+  @media (min-width: 64em) {
+    .site-nav {
+      display: block;
+    }
+
+    .site-header__cta {
+      display: inline-flex;
+    }
+  }
+
+  .site-nav__list {
+    display: flex;
+    gap: clamp(1rem, 2.2vw, 2.25rem);
+  }
+
+  .site-nav__link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    font-stretch: 96%;
+    text-decoration: none;
+    color: var(--fg);
+    transition: color var(--dur-base) var(--ease-standard);
+  }
+
+  /* Indicador de seção ativa: linha de medida sob o link. */
+  .site-nav__link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 8px;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform var(--dur-slow) var(--ease-out);
+  }
+
+  .site-nav__link:hover::after,
+  .site-nav__link:focus-visible::after,
+  .site-nav__link[aria-current='true']::after {
+    transform: scaleX(1);
+  }
+
+  .site-nav__link[aria-current='true'] {
+    color: var(--sb-almond);
+  }
+
+  .menu-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0 0.25rem 0 0.75rem;
+    margin-right: -0.25rem;
+    border: 0;
+    background: transparent;
+    color: var(--fg);
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .menu-toggle :global(.menu-toggle__icon) {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  .menu-toggle :global(.menu-toggle__icon--close),
+  .menu-toggle[aria-expanded='true'] :global(.menu-toggle__icon--open) {
+    display: none;
+  }
+
+  .menu-toggle[aria-expanded='true'] :global(.menu-toggle__icon--close) {
+    display: block;
+  }
+
+  @media (min-width: 64em) {
+    .menu-toggle {
+      display: none;
+    }
+  }
+
+  /* — Menu móvel — */
+  .mobile-menu {
+    position: fixed;
+    inset: var(--header-h) 0 0 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border-top: 1px solid var(--line);
+  }
+
+  .mobile-menu__inner {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--space-7);
+    min-height: 100%;
+    padding-block: var(--space-6) calc(var(--space-6) + env(safe-area-inset-bottom));
+  }
+
+  .mobile-menu__list {
+    display: grid;
+  }
+
+  .mobile-menu__list li {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .mobile-menu__link {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-4);
+    padding-block: 1rem;
+    font-size: clamp(1.75rem, 1.2rem + 3vw, 2.5rem);
+    font-weight: 600;
+    font-stretch: 82%;
+    line-height: 1.1;
+    text-decoration: none;
+  }
+
+  .mobile-menu__index {
+    color: var(--fg-muted);
+    min-width: 2rem;
+  }
+
+  .mobile-menu__footer {
+    display: grid;
+    gap: var(--space-4);
+    justify-items: start;
+  }
+
+  .mobile-menu__footer .btn {
+    width: 100%;
+  }
+
+  .mobile-menu__phone {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-height: 44px;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .mobile-menu__address {
+    color: var(--fg-muted);
+  }
+
+  :global(html:not(.reduce-motion)) .mobile-menu.is-visible .mobile-menu__list li {
+    animation: menu-item-in 520ms var(--ease-out) both;
+    animation-delay: calc(var(--i) * 45ms);
+  }
+
+  @keyframes menu-item-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+  }
+
+  @media (min-width: 64em) {
+    .mobile-menu {
+      display: none !important;
+    }
+  }
+</style>

@@ -1,0 +1,425 @@
+---
+import Photo from './Photo.astro';
+import Icon from './Icon.astro';
+import { hero } from '../content/sections';
+import { whatsappUrl } from '../lib/whatsapp';
+---
+
+<section class="hero surface-dark" id="inicio" aria-labelledby="hero-title">
+  <div class="hero__media" data-hero-media>
+    <Photo
+      name="hero"
+      ratio={1}
+      sizes="(min-width: 64em) 50vw, 100vw"
+      priority
+      class="hero__photo"
+    />
+    <div class="hero__shade" aria-hidden="true"></div>
+    <div class="hero__gauge" aria-hidden="true">
+      <span class="hero__gauge-track"></span>
+      <span class="hero__gauge-fill" data-hero-gauge></span>
+      <span class="hero__gauge-label t-label">Medida</span>
+    </div>
+    <span class="crop-marks hero__marks" aria-hidden="true"></span>
+  </div>
+
+  <div class="container hero__inner">
+    <div class="hero__content">
+      <p class="t-label hero__eyebrow" data-enter style="--e:0">{hero.eyebrow}</p>
+      <h1 id="hero-title" class="t-display hero__title">
+        {
+          hero.titleLines.map((line, i) => (
+            <span class:list={['hero__line', i === 1 && 'hero__line--accent']}>
+              <span data-enter style={`--e:${i + 1}`}>
+                {line}{' '}
+              </span>
+            </span>
+          ))
+        }
+      </h1>
+      <p class="t-lead hero__lead" data-enter style="--e:3">{hero.lead}</p>
+      <div class="hero__actions" data-enter style="--e:4">
+        <a class="btn" href={whatsappUrl()} target="_blank" rel="noopener" data-cta="hero">
+          <Icon name="whatsapp" class="btn__icon" />
+          <span>Solicitar orçamento</span>
+          <span class="visually-hidden">(abre o WhatsApp em nova aba)</span>
+        </a>
+        <a class="link-line link-line--down" href="#solucoes">
+          <span>Conhecer as soluções</span>
+          <Icon name="arrow-down" class="btn__arrow" />
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero__specs-band">
+    <ul class="container hero__specs" role="list" data-enter style="--e:5">
+      {
+        hero.specs.map((spec, i) => (
+          <li class="hero__spec">
+            <p class="t-label hero__spec-label">
+              <span class="hero__spec-index">0{i + 1}</span>
+              {spec.label}
+            </p>
+            <p class="t-small hero__spec-text">{spec.text}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    display: grid;
+    grid-template-rows: auto auto auto;
+    padding-top: var(--header-h);
+    overflow: clip;
+  }
+
+  /* — Mídia — */
+  .hero__media {
+    position: relative;
+    order: 2;
+    margin-top: var(--space-7);
+  }
+
+  .hero__media :global(.hero__photo) {
+    aspect-ratio: 4 / 3;
+  }
+
+  .hero__shade {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(180deg, rgb(51 39 33 / 0.55) 0%, rgb(51 39 33 / 0) 22%);
+    z-index: 1;
+  }
+
+  .hero__gauge {
+    position: absolute;
+    z-index: 2;
+    left: var(--gutter);
+    top: 16%;
+    bottom: 16%;
+    width: 9px;
+    color: var(--sb-beige);
+  }
+
+  .hero__gauge-track,
+  .hero__gauge-fill {
+    position: absolute;
+    left: 4px;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: currentColor;
+    opacity: 0.45;
+  }
+
+  .hero__gauge-track::before,
+  .hero__gauge-track::after {
+    content: '';
+    position: absolute;
+    left: -4px;
+    width: 9px;
+    height: 1px;
+    background: currentColor;
+  }
+
+  .hero__gauge-track::before {
+    top: 0;
+  }
+
+  .hero__gauge-track::after {
+    bottom: 0;
+  }
+
+  .hero__gauge-fill {
+    opacity: 1;
+    width: 3px;
+    left: 3px;
+    transform-origin: top center;
+    transform: scaleY(0);
+  }
+
+  .hero__gauge-label {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%) rotate(-90deg);
+    transform-origin: left center;
+    white-space: nowrap;
+    color: var(--sb-beige);
+    opacity: 0.85;
+  }
+
+  .hero__marks {
+    inset: 12px;
+  }
+
+  /* — Conteúdo — */
+  .hero__inner {
+    order: 1;
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero__content {
+    padding-top: clamp(2.5rem, 6vh, 4rem);
+  }
+
+  .hero__eyebrow {
+    color: var(--fg-muted);
+    margin-bottom: var(--space-5);
+  }
+
+  .hero__title {
+    margin-bottom: var(--space-5);
+  }
+
+  .hero__line {
+    display: block;
+    overflow: hidden;
+    padding-bottom: 0.06em;
+    margin-bottom: -0.06em;
+  }
+
+  .hero__line > span {
+    display: block;
+  }
+
+  .hero__line--accent {
+    color: var(--sb-almond);
+  }
+
+  .hero__lead {
+    max-width: 33rem;
+    margin-bottom: var(--space-6);
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4) var(--space-6);
+  }
+
+  /* — Faixa de especificações — */
+  .hero__specs-band {
+    order: 3;
+    position: relative;
+    z-index: 2;
+    background: var(--bg);
+  }
+
+  .hero__specs {
+    display: grid;
+    padding-block: var(--space-6) var(--space-7);
+  }
+
+  .hero__spec {
+    padding-block: var(--space-4);
+    border-top: 1px solid var(--line);
+  }
+
+  .hero__spec-label {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: var(--space-2);
+    color: var(--fg);
+  }
+
+  .hero__spec-index {
+    color: var(--fg-muted);
+  }
+
+  .hero__spec-text {
+    color: var(--fg);
+    opacity: 0.9;
+    max-width: 30ch;
+  }
+
+  @media (min-width: 40em) and (max-width: 63.99em) {
+    .hero__specs {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      column-gap: var(--col-gap);
+    }
+
+    .hero__media :global(.hero__photo) {
+      aspect-ratio: 16 / 9;
+    }
+  }
+
+  @media (max-width: 63.99em) {
+    .hero__gauge {
+      display: none;
+    }
+  }
+
+  /* — Desktop: composição dividida — */
+  @media (min-width: 64em) {
+    .hero {
+      grid-template-rows: 1fr auto;
+      min-height: max(42rem, min(100svh, 64rem));
+    }
+
+    .hero__media {
+      position: absolute;
+      inset: 0 0 0 50%;
+      margin: 0;
+      order: 0;
+    }
+
+    .hero__media :global(.hero__photo) {
+      aspect-ratio: auto;
+      height: 100%;
+    }
+
+    .hero__inner {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: var(--col-gap);
+      align-items: center;
+    }
+
+    .hero__content {
+      grid-column: 1 / span 6;
+      padding-block: clamp(3rem, 8vh, 6rem) clamp(2.5rem, 6vh, 4.5rem);
+      padding-right: var(--space-6);
+    }
+
+    .hero__specs-band {
+      align-self: end;
+    }
+
+    .hero__specs {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: var(--col-gap);
+      padding-block: 0;
+    }
+
+    .hero__spec {
+      grid-column: span 4;
+      padding-block: var(--space-5) var(--space-6);
+    }
+  }
+
+  @media (min-width: 64em) and (max-height: 760px) {
+    .hero__content {
+      padding-block: 2.5rem 2rem;
+    }
+  }
+
+  /* ======================================================================
+     Entrada do hero
+     - primeira visita: começa quando a abertura sobe (2,5 s)
+     - visitas seguintes: começa imediatamente e é curta
+     - "pular": reinicia com a versão rápida
+     ====================================================================== */
+  /* Sem movimento reduzido (classe decidida no <head>): entrada animada do hero. */
+  :global(html:not(.reduce-motion).js) .hero [data-enter] {
+    animation: hero-rise 700ms var(--ease-out) both;
+    animation-delay: calc(0.05s + var(--e) * 0.06s);
+  }
+
+  :global(html:not(.reduce-motion).js) .hero__line [data-enter] {
+    animation-name: hero-line;
+  }
+
+  :global(html:not(.reduce-motion).js) .hero__media {
+    animation: hero-media 1100ms var(--ease-out) both;
+  }
+
+  :global(html:not(.reduce-motion).js) .hero__gauge-track {
+    animation: hero-gauge 900ms var(--ease-out) 0.35s both;
+  }
+
+  :global(html:not(.reduce-motion).intro-play) .hero [data-enter] {
+    animation-delay: calc(2.55s + var(--e) * 0.07s);
+  }
+
+  :global(html:not(.reduce-motion).intro-play) .hero__media {
+    animation-delay: 2.45s;
+  }
+
+  :global(html:not(.reduce-motion).intro-play) .hero__gauge-track {
+    animation-delay: 2.9s;
+  }
+
+  :global(html:not(.reduce-motion).intro-skip) .hero [data-enter] {
+    animation-name: hero-rise-quick;
+    animation-delay: calc(0.08s + var(--e) * 0.05s);
+  }
+
+  :global(html:not(.reduce-motion).intro-skip) .hero__line [data-enter] {
+    animation-name: hero-line-quick;
+  }
+
+  :global(html:not(.reduce-motion).intro-skip) .hero__media {
+    animation-name: hero-media-quick;
+    animation-delay: 0s;
+  }
+
+  :global(html:not(.reduce-motion).intro-skip) .hero__gauge-track {
+    animation-name: hero-gauge-quick;
+    animation-delay: 0.3s;
+  }
+
+  @keyframes hero-rise {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+  }
+
+  @keyframes hero-rise-quick {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+  }
+
+  @keyframes hero-line {
+    from {
+      transform: translateY(105%);
+    }
+  }
+
+  @keyframes hero-line-quick {
+    from {
+      transform: translateY(105%);
+    }
+  }
+
+  @keyframes hero-media {
+    from {
+      clip-path: inset(0 0 0 100%);
+    }
+    to {
+      clip-path: inset(0 0 0 0);
+    }
+  }
+
+  @keyframes hero-media-quick {
+    from {
+      clip-path: inset(0 0 0 100%);
+    }
+    to {
+      clip-path: inset(0 0 0 0);
+    }
+  }
+
+  @keyframes hero-gauge {
+    from {
+      transform: scaleY(0);
+    }
+  }
+
+  @keyframes hero-gauge-quick {
+    from {
+      transform: scaleY(0);
+    }
+  }
+</style>

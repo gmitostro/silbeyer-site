@@ -1,0 +1,445 @@
+---
+import Icon from './Icon.astro';
+import CrateDrawing from './CrateDrawing.astro';
+import { company } from '../content/site';
+import { packagingOptions, quote } from '../content/sections';
+import { whatsappUrl } from '../lib/whatsapp';
+---
+
+<section class="section surface-coffee quote" id="orcamento" aria-labelledby="orcamento-title">
+  <div class="quote__backdrop" aria-hidden="true">
+    <CrateDrawing variant="line" labels="letters" class="quote__crate" />
+  </div>
+
+  <div class="container quote__grid">
+    <div class="quote__intro">
+      <div class="ruler" aria-hidden="true">
+        <span class="ruler__ticks" data-ruler-ticks></span>
+        <span class="ruler__line" data-ruler-line></span>
+      </div>
+      <p class="t-label quote__label"><span>{quote.index}</span> — {quote.label}</p>
+      <h2 class="t-h2 quote__title" id="orcamento-title">{quote.title}</h2>
+      <p class="t-lead quote__text">{quote.text}</p>
+
+      <div class="quote__actions">
+        <a class="btn" href={whatsappUrl()} target="_blank" rel="noopener" data-cta="quote">
+          <Icon name="whatsapp" class="btn__icon" />
+          <span>Falar no WhatsApp</span>
+          <span class="visually-hidden">(abre em nova aba)</span>
+        </a>
+        <a class="btn btn--ghost" href={company.phone.href}>
+          <Icon name="phone" class="btn__icon" />
+          <span><span class="visually-hidden">Ligar para </span>{company.phone.display}</span>
+        </a>
+      </div>
+
+      <div class="quote__checklist">
+        <p class="t-label">{quote.checklistTitle}</p>
+        <ul role="list">
+          {
+            quote.checklist.map((item, i) => (
+              <li>
+                <span class="t-mono quote__check-num" aria-hidden="true">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <span>{item}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+
+    <div class="quote__panel surface-light" id="orcamento-form">
+      <h3 class="t-h3 quote__form-title" id="form-title">Monte sua mensagem de orçamento</h3>
+      <p class="t-small quote__form-help" id="form-help">
+        Preencha os campos e continue no WhatsApp com a mensagem pronta para revisar e enviar. Nenhum dado é enviado ou
+        armazenado por este site.
+      </p>
+
+      <div class="form-errors" role="alert" tabindex="-1" data-error-summary hidden>
+        <p class="form-errors__title">Revise os campos abaixo:</p>
+        <ul role="list" data-error-list></ul>
+      </div>
+
+      <form class="quote-form" novalidate aria-labelledby="form-title" aria-describedby="form-help" data-quote-form>
+        <div class="field">
+          <label for="q-nome">Nome <span class="field__req" aria-hidden="true">*</span></label>
+          <input id="q-nome" name="nome" type="text" autocomplete="name" required aria-describedby="q-nome-erro" />
+          <p class="field__error" id="q-nome-erro" data-error-for="nome"></p>
+        </div>
+
+        <div class="field">
+          <label for="q-empresa">Empresa <span class="field__opt">(opcional)</span></label>
+          <input id="q-empresa" name="empresa" type="text" autocomplete="organization" />
+        </div>
+
+        <div class="field">
+          <label for="q-tipo">Tipo de embalagem <span class="field__req" aria-hidden="true">*</span></label>
+          <div class="field__select">
+            <select id="q-tipo" name="tipo" required aria-describedby="q-tipo-erro">
+              <option value="">Selecione uma opção</option>
+              {packagingOptions.map((opt) => <option value={opt}>{opt}</option>)}
+            </select>
+            <Icon name="arrow-down" class="field__chevron" />
+          </div>
+          <p class="field__error" id="q-tipo-erro" data-error-for="tipo"></p>
+        </div>
+
+        <div class="field">
+          <label for="q-descricao">Descreva a necessidade <span class="field__req" aria-hidden="true">*</span></label>
+          <textarea
+            id="q-descricao"
+            name="descricao"
+            rows="4"
+            required
+            minlength="15"
+            aria-describedby="q-descricao-ajuda q-descricao-erro"></textarea>
+          <p class="field__help" id="q-descricao-ajuda">
+            Se possível, inclua dimensões (C × L × A), peso aproximado, quantidade e tipo de transporte.
+          </p>
+          <p class="field__error" id="q-descricao-erro" data-error-for="descricao"></p>
+        </div>
+
+        <fieldset class="field field--choice">
+          <legend>Como prefere o retorno? <span class="field__req" aria-hidden="true">*</span></legend>
+          <div class="choices">
+            <label class="choice"><input type="radio" name="retorno" value="WhatsApp" checked /> <span>WhatsApp</span></label>
+            <label class="choice"><input type="radio" name="retorno" value="Ligação" /> <span>Ligação</span></label>
+            <label class="choice"><input type="radio" name="retorno" value="E-mail" /> <span>E-mail</span></label>
+          </div>
+        </fieldset>
+
+        <div class="field" data-contact-field="Ligação" hidden>
+          <label for="q-telefone">Telefone para retorno <span class="field__req" aria-hidden="true">*</span></label>
+          <input id="q-telefone" name="telefone" type="tel" autocomplete="tel" inputmode="tel" aria-describedby="q-telefone-erro" />
+          <p class="field__error" id="q-telefone-erro" data-error-for="telefone"></p>
+        </div>
+
+        <div class="field" data-contact-field="E-mail" hidden>
+          <label for="q-email">E-mail para retorno <span class="field__req" aria-hidden="true">*</span></label>
+          <input id="q-email" name="email" type="email" autocomplete="email" aria-describedby="q-email-erro" />
+          <p class="field__error" id="q-email-erro" data-error-for="email"></p>
+        </div>
+
+        <p class="t-small quote__req-note"><span aria-hidden="true">*</span> Campos obrigatórios</p>
+
+        <button class="btn quote__submit" type="submit">
+          <Icon name="whatsapp" class="btn__icon" />
+          <span>Continuar no WhatsApp</span>
+        </button>
+
+        <div class="form-status" role="status" aria-live="polite" data-form-status></div>
+      </form>
+
+      <noscript>
+        <p class="t-small quote__noscript">
+          Para montar a mensagem automaticamente, ative o JavaScript. Você também pode falar direto pelo
+          <a href={whatsappUrl()}>WhatsApp</a> ou pelo telefone <a href={company.phone.href}>{company.phone.display}</a>.
+        </p>
+      </noscript>
+    </div>
+  </div>
+</section>
+
+<style>
+  .quote {
+    overflow: clip;
+  }
+
+  .quote__backdrop {
+    position: absolute;
+    right: -6%;
+    top: 4%;
+    width: min(70vw, 56rem);
+    opacity: 0.22;
+    pointer-events: none;
+  }
+
+  .quote__backdrop :global(.quote__crate) {
+    --graphic: var(--sb-almond);
+    --graphic-soft: var(--sb-almond);
+  }
+
+  .quote__grid {
+    position: relative;
+    display: grid;
+    gap: var(--space-8);
+  }
+
+  .quote__intro .ruler {
+    margin-bottom: var(--space-5);
+  }
+
+  .quote__label {
+    margin-bottom: var(--space-5);
+  }
+
+  .quote__title {
+    max-width: 16ch;
+    margin-bottom: var(--space-5);
+  }
+
+  .quote__text {
+    max-width: 34rem;
+    margin-bottom: var(--space-6);
+  }
+
+  .quote__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    margin-bottom: var(--space-7);
+  }
+
+  .quote__checklist ul {
+    margin-top: var(--space-4);
+    display: grid;
+  }
+
+  .quote__checklist li {
+    display: grid;
+    grid-template-columns: 2.5rem 1fr;
+    gap: var(--space-3);
+    padding-block: 0.75rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .quote__checklist li:last-child {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .quote__check-num {
+    font-size: 0.8125rem;
+    padding-top: 0.2rem;
+  }
+
+  /* — Painel do formulário — */
+  .quote__panel {
+    position: relative;
+    padding: clamp(1.25rem, 0.75rem + 2.5vw, 3rem);
+    box-shadow: 0 30px 60px -30px rgb(38 29 24 / 0.6);
+    scroll-margin-top: calc(var(--header-h) + 1rem);
+  }
+
+  .quote__form-title {
+    margin-bottom: var(--space-3);
+  }
+
+  .quote__form-help {
+    margin-bottom: var(--space-6);
+    max-width: 36rem;
+  }
+
+  .quote-form {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .field {
+    display: grid;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    border: 0;
+    min-width: 0;
+  }
+
+  .field label,
+  .field legend {
+    font-weight: 600;
+    font-size: 0.9375rem;
+    padding: 0;
+  }
+
+  .field__req {
+    color: var(--sb-error);
+  }
+
+  .field__opt {
+    font-weight: 400;
+    color: var(--fg-muted);
+  }
+
+  .field input[type='text'],
+  .field input[type='tel'],
+  .field input[type='email'],
+  .field select,
+  .field textarea {
+    width: 100%;
+    min-height: 3rem;
+    padding: 0.75rem 0.875rem;
+    border: 1px solid rgb(51 39 33 / 0.45);
+    border-radius: var(--radius);
+    background: var(--sb-paper);
+    color: var(--sb-charcoal);
+    font-size: 1rem;
+    transition:
+      border-color var(--dur-base) var(--ease-standard),
+      box-shadow var(--dur-base) var(--ease-standard);
+  }
+
+  .field textarea {
+    resize: vertical;
+    min-height: 7.5rem;
+    line-height: 1.5;
+  }
+
+  .field input:hover,
+  .field select:hover,
+  .field textarea:hover {
+    border-color: var(--sb-charcoal);
+  }
+
+  .field input:focus-visible,
+  .field select:focus-visible,
+  .field textarea:focus-visible {
+    outline: 2px solid var(--sb-coffee);
+    outline-offset: 1px;
+    border-color: var(--sb-charcoal);
+  }
+
+  .field [aria-invalid='true'] {
+    border-color: var(--sb-error);
+    box-shadow: inset 3px 0 0 var(--sb-error);
+  }
+
+  .field__select {
+    position: relative;
+  }
+
+  .field__select select {
+    appearance: none;
+    padding-right: 2.75rem;
+    cursor: pointer;
+  }
+
+  .field__select :global(.field__chevron) {
+    position: absolute;
+    right: 0.9rem;
+    top: 50%;
+    width: 1.1rem;
+    height: 1.1rem;
+    transform: translateY(-50%);
+    pointer-events: none;
+  }
+
+  .field__help {
+    font-size: 0.875rem;
+    color: var(--fg-muted);
+  }
+
+  .field__error {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--sb-error);
+  }
+
+  .field__error:empty {
+    display: none;
+  }
+
+  .choices {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-4);
+    margin-top: var(--space-2);
+  }
+
+  .choice {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-height: 44px;
+    padding-right: 0.5rem;
+    font-weight: 500 !important;
+    cursor: pointer;
+  }
+
+  .choice input {
+    width: 1.15rem;
+    height: 1.15rem;
+    margin: 0;
+    accent-color: var(--sb-charcoal);
+    cursor: pointer;
+  }
+
+  .quote__req-note {
+    color: var(--fg-muted);
+  }
+
+  .quote__submit {
+    justify-self: start;
+  }
+
+  .form-errors {
+    margin-bottom: var(--space-5);
+    padding: var(--space-4) var(--space-5);
+    border-left: 3px solid var(--sb-error);
+    background: var(--sb-paper);
+  }
+
+  .form-errors:focus-visible {
+    outline: 2px solid var(--sb-error);
+  }
+
+  .form-errors__title {
+    font-weight: 700;
+    color: var(--sb-error);
+    margin-bottom: var(--space-2);
+  }
+
+  .form-errors :global(a) {
+    color: var(--sb-error);
+    font-weight: 600;
+  }
+
+  .form-errors :global(li) {
+    padding-block: 0.15rem;
+  }
+
+  .form-status:empty {
+    display: none;
+  }
+
+  .form-status {
+    display: grid;
+    gap: var(--space-2);
+    padding: var(--space-4) var(--space-5);
+    border-left: 3px solid var(--sb-charcoal);
+    background: var(--sb-paper);
+  }
+
+  .form-status :global(a) {
+    font-weight: 600;
+  }
+
+  .quote__noscript {
+    margin-top: var(--space-5);
+  }
+
+  @media (max-width: 30em) {
+    .quote__submit,
+    .quote__actions .btn {
+      width: 100%;
+    }
+  }
+
+  @media (min-width: 64em) {
+    .quote__grid {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: var(--col-gap);
+      align-items: start;
+    }
+
+    .quote__intro {
+      grid-column: 1 / span 5;
+      position: sticky;
+      top: calc(var(--header-h) + 3rem);
+    }
+
+    .quote__panel {
+      grid-column: 7 / span 6;
+    }
+  }
+</style>

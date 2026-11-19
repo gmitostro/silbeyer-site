@@ -1,0 +1,266 @@
+---
+/**
+ * Desenho isométrico da embalagem. Estático por padrão (estado final completo);
+ * a abertura (CSS) e o processo (GSAP) animam as mesmas classes.
+ *
+ *  variant="full": desenho + peças de madeira montadas
+ *  variant="line": somente linhas técnicas (envelope e cotas)
+ */
+import { buildCrate } from '../lib/crate';
+
+interface Props {
+  variant?: 'full' | 'line';
+  labels?: 'numbers' | 'letters';
+  class?: string;
+  id?: string;
+}
+
+const { variant = 'full', labels = 'letters', class: className, id } = Astro.props;
+const g = buildCrate();
+
+const labelText = {
+  numbers: { c: '1200', l: '800', a: '950' },
+  letters: { c: 'C', l: 'L', a: 'A' },
+}[labels];
+
+const parts = [
+  { key: 'skids', part: g.skids },
+  { key: 'left', part: g.left },
+  { key: 'right', part: g.right },
+  { key: 'cleats-l', part: g.cleatsLeft },
+  { key: 'cleats-r', part: g.cleatsRight },
+] as const;
+---
+
+<svg
+  class:list={['crate', `crate--${variant}`, className]}
+  id={id}
+  viewBox={g.viewBox}
+  width={g.width}
+  height={g.height}
+  aria-hidden="true"
+  focusable="false"
+>
+  <g class="cr-guides" data-stage="1">
+    {g.guides.map((d, i) => <path class="ln ln--guide draw" d={d} pathLength="1" style={`--i:${i}`} />)}
+  </g>
+
+  {
+    variant === 'full' && (
+      <g class="cr-part cr-inner" data-stage="3">
+        {g.inner.polys.map((p) => (
+          <path class={p.cls} d={p.d} />
+        ))}
+      </g>
+    )
+  }
+
+  {
+    variant === 'full' && (
+      <g class="cr-product" data-stage="1">
+        {g.product.map((d, i) => (
+          <path class="ln ln--product draw" d={d} pathLength="1" style={`--i:${i}`} />
+        ))}
+      </g>
+    )
+  }
+
+  <g class="cr-hidden" data-stage="2">
+    {g.hidden.map((d) => <path class="ln ln--hidden" d={d} />)}
+  </g>
+
+  <g class="cr-outline" data-stage="2">
+    {g.outline.map((d, i) => <path class="ln ln--edge draw" d={d} pathLength="1" style={`--i:${i}`} />)}
+  </g>
+
+  <g class="cr-dims" data-stage="2">
+    {
+      g.dims.map((dim, i) => (
+        <g class="cr-dim" style={`--i:${i}`}>
+          <path class="ln ln--ext draw" d={dim.ext} pathLength="1" />
+          <path class="ln ln--dim draw" d={dim.d} pathLength="1" />
+          <path class="ln ln--tick" d={dim.ticks} />
+          <text
+            class="dim-label"
+            x={dim.label.x}
+            y={dim.label.y}
+            transform={`rotate(${dim.label.angle} ${dim.label.x} ${dim.label.y})`}
+            text-anchor="middle"
+            dominant-baseline="central"
+          >
+            {labelText[dim.axis]}
+          </text>
+        </g>
+      ))
+    }
+  </g>
+
+  {
+    variant === 'full' &&
+      parts.map(({ key, part }) => (
+        <g class={`cr-part cr-${key}`} data-stage="3" style={`--fx:${part.from[0]}px;--fy:${part.from[1]}px`}>
+          {part.polys.map((p) => (
+            <path class={p.cls} d={p.d} />
+          ))}
+          {part.lines.map((l) => (
+            <path class={l.cls} d={l.d} />
+          ))}
+        </g>
+      ))
+  }
+
+  {
+    variant === 'full' && (
+      <g class="cr-part cr-lid" data-stage="4" style={`--fx:${g.lid.from[0]}px;--fy:${g.lid.from[1]}px`}>
+        {g.lid.polys.map((p) => (
+          <path class={p.cls} d={p.d} />
+        ))}
+        {g.lid.lines.map((l) => (
+          <path class={l.cls} d={l.d} />
+        ))}
+      </g>
+    )
+  }
+
+  {
+    variant === 'full' && (
+      <g class="cr-part cr-straps" data-stage="4">
+        {g.straps.polys.map((p) => (
+          <path class={p.cls} d={p.d} />
+        ))}
+      </g>
+    )
+  }
+
+  {
+    variant === 'full' && (
+      <g class="cr-part cr-marks" data-stage="4">
+        {g.marks.polys.map((p) => (
+          <path class={p.cls} d={p.d} />
+        ))}
+        {g.marks.lines.map((l) => (
+          <path class={l.cls} d={l.d} />
+        ))}
+      </g>
+    )
+  }
+</svg>
+
+<style>
+  .crate {
+    --crate-line: var(--graphic, var(--sb-almond));
+    --crate-guide: var(--graphic-soft, var(--sb-copper));
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .crate :global(.ln) {
+    fill: none;
+    stroke: var(--crate-line);
+    stroke-width: 1.5;
+    stroke-linecap: square;
+    stroke-linejoin: miter;
+  }
+
+  .crate :global(.ln--guide) {
+    stroke: var(--crate-guide);
+    stroke-width: 1;
+    opacity: 0.55;
+  }
+
+  .crate :global(.ln--product) {
+    stroke-width: 1.25;
+    opacity: 0.85;
+  }
+
+  .crate :global(.ln--hidden) {
+    stroke-width: 1;
+    stroke-dasharray: 6 5;
+    opacity: 0.7;
+  }
+
+  .crate :global(.ln--ext),
+  .crate :global(.ln--dim),
+  .crate :global(.ln--tick) {
+    stroke-width: 1;
+  }
+
+  .crate :global(.ln--ext) {
+    opacity: 0.6;
+  }
+
+  .crate :global(.dim-label) {
+    fill: var(--crate-line);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+  }
+
+  /* Peças de madeira — tons da paleta, com variações para luz e sombra. */
+  .crate :global(.pf) {
+    stroke: var(--sb-charcoal-deep);
+    stroke-width: 1;
+    stroke-linejoin: round;
+  }
+
+  .crate :global(.pf-left) {
+    fill: var(--sb-copper);
+  }
+
+  .crate :global(.pf-right) {
+    fill: var(--sb-coffee);
+  }
+
+  .crate :global(.pf-top) {
+    fill: var(--sb-almond);
+  }
+
+  .crate :global(.pf-inner) {
+    fill: #4a352c;
+  }
+
+  .crate :global(.pf-inner-2) {
+    fill: #3d2c25;
+  }
+
+  .crate :global(.cl-left) {
+    fill: #ad8669;
+  }
+
+  .crate :global(.cl-right) {
+    fill: #7a5646;
+  }
+
+  .crate :global(.cl-top) {
+    fill: #d5b9a1;
+  }
+
+  .crate :global(.seam) {
+    fill: none;
+    stroke: rgb(38 29 24 / 0.38);
+    stroke-width: 1;
+  }
+
+  .crate :global(.strap) {
+    fill: var(--sb-charcoal);
+    stroke: rgb(38 29 24 / 0.9);
+  }
+
+  .crate :global(.plate) {
+    fill: var(--sb-beige);
+    stroke: var(--sb-charcoal);
+  }
+
+  .crate :global(.mark) {
+    fill: none;
+    stroke: var(--sb-charcoal);
+    stroke-width: 2;
+    stroke-linecap: square;
+  }
+
+  .crate :global(.mark--thin) {
+    stroke-width: 1.5;
+  }
+</style>

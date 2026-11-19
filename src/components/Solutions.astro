@@ -1,0 +1,287 @@
+---
+import SectionHead from './SectionHead.astro';
+import Photo from './Photo.astro';
+import Icon from './Icon.astro';
+import CrateDrawing from './CrateDrawing.astro';
+import { solutions, solutionsIntro } from '../content/sections';
+import { quoteMessageFor, whatsappUrl } from '../lib/whatsapp';
+
+const [first, second, third, fourth] = solutions;
+---
+
+<section class="section surface-light solutions" id="solucoes" aria-labelledby="solucoes-title">
+  <div class="container">
+    <SectionHead
+      index={solutionsIntro.index}
+      label={solutionsIntro.label}
+      title={solutionsIntro.title}
+      text={solutionsIntro.text}
+      titleId="solucoes-title"
+      meta="4 linhas de solução"
+    />
+
+    <ul class="solutions__list" role="list">
+      {
+        [first, second, third].map((item, i) => (
+          <li class:list={['solution', `solution--${i + 1}`]}>
+            <article class="solution__article" aria-labelledby={`solucao-${i + 1}`}>
+              <div class="solution__media" data-reveal-image>
+                {item.media && (
+                  <Photo
+                    name={item.media}
+                    ratio={i === 2 ? 2 : 4 / 5}
+                    sizes={
+                      i === 2
+                        ? '(min-width: 64em) 66vw, calc(100vw - 2rem)'
+                        : '(min-width: 64em) 40vw, (min-width: 48em) 50vw, calc(100vw - 2rem)'
+                    }
+                    cropMarks
+                  />
+                )}
+              </div>
+              <div class="solution__body">
+                <p class="t-label solution__code">{item.code}</p>
+                <h3 class="t-h3 solution__title" id={`solucao-${i + 1}`}>
+                  {item.title}
+                </h3>
+                <p class="solution__summary">{item.summary}</p>
+                <ul class="solution__details t-small" role="list">
+                  {item.details.map((d) => (
+                    <li>{d}</li>
+                  ))}
+                </ul>
+                <a
+                  class="link-line solution__cta"
+                  href={whatsappUrl(quoteMessageFor(item.subject))}
+                  target="_blank"
+                  rel="noopener"
+                  data-cta={`solucao-${i + 1}`}
+                >
+                  <span>Pedir orçamento</span>
+                  <span class="visually-hidden">
+                    de {item.title.toLowerCase()} pelo WhatsApp (abre em nova aba)
+                  </span>
+                  <Icon name="arrow-right" class="btn__arrow" />
+                </a>
+              </div>
+            </article>
+          </li>
+        ))
+      }
+
+      <li class="solution solution--4 surface-almond">
+        <article class="solution__article" aria-labelledby="solucao-4">
+          <div class="solution__drawing" aria-hidden="true">
+            <CrateDrawing variant="line" labels="letters" class="solution__crate" />
+          </div>
+          <div class="solution__body">
+            <p class="t-label solution__code">{fourth.code}</p>
+            <h3 class="t-h3 solution__title" id="solucao-4">{fourth.title}</h3>
+            <p class="solution__summary">{fourth.summary}</p>
+            <ul class="solution__details t-small" role="list">
+              {fourth.details.map((d) => <li>{d}</li>)}
+            </ul>
+            <div class="solution__actions">
+              <a class="btn" href="#orcamento-form" data-cta="solucao-4">
+                <span>Descrever meu projeto</span>
+                <Icon name="arrow-down" class="btn__arrow" />
+              </a>
+              <a
+                class="link-line"
+                href={whatsappUrl(quoteMessageFor(fourth.subject))}
+                target="_blank"
+                rel="noopener"
+              >
+                <span>Falar no WhatsApp</span>
+                <span class="visually-hidden">(abre em nova aba)</span>
+                <Icon name="arrow-right" class="btn__arrow" />
+              </a>
+            </div>
+          </div>
+        </article>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<style>
+  .solutions__list {
+    display: grid;
+    gap: clamp(3.5rem, 2rem + 5vw, 7rem);
+  }
+
+  .solution__article {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .solution__media {
+    position: relative;
+  }
+
+  .solution__media :global(.photo img) {
+    transition: transform 900ms var(--ease-out);
+  }
+
+  .solution__media :global(.crop-marks) {
+    opacity: 0;
+    inset: 22px;
+    transition:
+      opacity var(--dur-base) var(--ease-standard),
+      inset var(--dur-slow) var(--ease-out);
+  }
+
+  @media (hover: hover) {
+    .solution__article:hover .solution__media :global(.photo img) {
+      transform: scale(1.035);
+    }
+
+    .solution__article:hover .solution__media :global(.crop-marks) {
+      opacity: 1;
+      inset: 12px;
+    }
+  }
+
+  .solution__article:focus-within .solution__media :global(.crop-marks) {
+    opacity: 1;
+    inset: 12px;
+  }
+
+  .solution__code {
+    color: var(--fg-muted);
+    margin-bottom: var(--space-3);
+  }
+
+  .solution__title {
+    margin-bottom: var(--space-4);
+    max-width: 20ch;
+  }
+
+  .solution__summary {
+    max-width: 34rem;
+    margin-bottom: var(--space-4);
+  }
+
+  .solution__details {
+    display: grid;
+    gap: 0;
+    margin-bottom: var(--space-4);
+    max-width: 30rem;
+  }
+
+  .solution__details li {
+    display: flex;
+    gap: 0.75rem;
+    padding-block: 0.6rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .solution__details li::before {
+    content: '';
+    flex: none;
+    width: 7px;
+    height: 7px;
+    margin-top: 0.55em;
+    border: 1px solid var(--fg-muted);
+  }
+
+  .solution__details li:last-child {
+    border-bottom: 1px solid var(--line);
+  }
+
+  /* — 04: faixa técnica em bege amêndoa — */
+  .solution--4 {
+    padding: clamp(1.5rem, 1rem + 3vw, 4rem);
+  }
+
+  .solution__drawing {
+    max-width: 26rem;
+  }
+
+  .solution__drawing :global(.solution__crate) {
+    width: 100%;
+  }
+
+  .solution__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4) var(--space-6);
+    margin-top: var(--space-5);
+  }
+
+  /* — Composição editorial assimétrica (desktop) — */
+  @media (min-width: 48em) {
+    .solutions__list {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: var(--col-gap);
+    }
+
+    .solution--1 {
+      grid-column: 1 / span 6;
+    }
+
+    .solution--2 {
+      grid-column: 8 / span 5;
+      margin-top: clamp(6rem, 12vw, 14rem);
+    }
+
+    .solution--3 {
+      grid-column: 1 / -1;
+    }
+
+    .solution--3 .solution__article {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: var(--col-gap);
+      align-items: end;
+    }
+
+    .solution--3 .solution__media {
+      grid-column: 1 / span 8;
+    }
+
+    .solution--3 .solution__body {
+      grid-column: 9 / span 4;
+    }
+
+    .solution--4 {
+      grid-column: 1 / -1;
+    }
+
+    .solution--4 .solution__article {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: var(--col-gap);
+      align-items: center;
+    }
+
+    .solution--4 .solution__drawing {
+      grid-column: 1 / span 5;
+      max-width: none;
+    }
+
+    .solution--4 .solution__body {
+      grid-column: 7 / span 6;
+    }
+  }
+
+  @media (min-width: 64em) {
+    .solution--3 .solution__media {
+      grid-column: 2 / span 7;
+    }
+
+    .solution--4 {
+      grid-column: 2 / span 11;
+    }
+  }
+
+  @media (min-width: 48em) and (max-width: 63.99em) {
+    .solution--3 .solution__media {
+      grid-column: 1 / -1;
+    }
+
+    .solution--3 .solution__body {
+      grid-column: 1 / span 9;
+      margin-top: var(--space-5);
+    }
+  }
+</style>

@@ -1,0 +1,77 @@
+---
+import '@fontsource-variable/archivo/wdth.css';
+import '@fontsource/ibm-plex-mono/400.css';
+import '@fontsource/ibm-plex-mono/500.css';
+import archivoLatin from '@fontsource-variable/archivo/files/archivo-latin-wdth-normal.woff2?url';
+import '../styles/global.css';
+import { motion, seo } from '../content/site';
+import { asset } from '../lib/paths';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** Exibe a abertura animada (somente na página inicial). */
+  intro?: boolean;
+}
+
+const { title = seo.title, description = seo.description, intro = false } = Astro.props;
+const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).toString() : undefined;
+---
+
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#332721" />
+    <meta name="format-detection" content="telephone=no" />
+    {canonical && <link rel="canonical" href={canonical} />}
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content={seo.locale} />
+    <meta property="og:site_name" content="Silbeyer Embalagens de Madeira" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    {canonical && <meta property="og:url" content={canonical} />}
+    <meta name="twitter:card" content="summary" />
+
+    <!-- Ícone temporário: substituir por versão aprovada do logotipo -->
+    <link rel="icon" href={asset('/favicon.svg')} type="image/svg+xml" />
+
+    <slot name="head" />
+
+    <link rel="preload" href={archivoLatin} as="font" type="font/woff2" crossorigin />
+
+    <script is:inline define:vars={{ motionPolicy: motion, intro }}>
+      // Decide, antes da primeira pintura: (1) se o movimento fica ligado e
+      // (2) se a abertura toca nesta visita (uma vez por sessão, sem âncora na URL).
+      // A classe `reduce-motion` no <html> é a única chave de movimento reduzido:
+      // CSS e scripts leem só ela, nunca a media query diretamente.
+      (function () {
+        var d = document.documentElement;
+        d.classList.add('js');
+        var reduce = false;
+        try {
+          reduce = motionPolicy === 'system' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        } catch (e) {}
+        if (reduce) d.classList.add('reduce-motion');
+        if (!intro) return;
+        try {
+          var seen = window.sessionStorage.getItem('sb-intro');
+          if (!seen && !window.location.hash) d.classList.add(reduce ? 'intro-static' : 'intro-play');
+          window.sessionStorage.setItem('sb-intro', '1');
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <slot name="intro" />
+    <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+    <slot />
+    <script>
+      import '../scripts/main';
+    </script>
+  </body>
+</html>

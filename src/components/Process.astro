@@ -1,0 +1,225 @@
+---
+import SectionHead from './SectionHead.astro';
+import CrateDrawing from './CrateDrawing.astro';
+import Photo from './Photo.astro';
+import { processIntro, processSteps } from '../content/sections';
+---
+
+<section class="section surface-dark process" id="processo" aria-labelledby="processo-title">
+  <div class="container">
+    <SectionHead
+      index={processIntro.index}
+      label={processIntro.label}
+      title={processIntro.title}
+      text={processIntro.text}
+      titleId="processo-title"
+      meta="Folha 02 / Isométrica"
+    />
+
+    <div class="process__body" data-process>
+      <div class="process__figure">
+        <div class="process__sheet">
+          <div class="process__sheet-head t-label" aria-hidden="true">
+            <span>Fig. 02 — Embalagem</span>
+            <span>Etapa <span data-stage-current>04</span> / 04</span>
+          </div>
+          <CrateDrawing labels="letters" class="process__crate" id="process-crate" />
+          <p class="process__legend t-label" aria-hidden="true">
+            <span><b>C</b> comprimento</span>
+            <span><b>L</b> largura</span>
+            <span><b>A</b> altura</span>
+          </p>
+        </div>
+      </div>
+
+      <ol class="process__steps" role="list">
+        {
+          processSteps.map((step, i) => (
+            <li class="step" data-step={i + 1}>
+              <p class="step__num t-mono" aria-hidden="true">
+                0{i + 1}
+              </p>
+              <h3 class="t-h3 step__title">
+                <span class="visually-hidden">Etapa {i + 1}: </span>
+                {step.title}
+              </h3>
+              <p class="step__text">{step.text}</p>
+              <p class="step__tags t-label">{step.tags.join(' / ')}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </div>
+
+  <div class="container process__gallery">
+    <div class="process__wide" data-reveal-image>
+      <Photo name="workshop" ratio={16 / 9} sizes="(min-width: 64em) 66vw, (min-width: 48em) 75vw, calc(100vw - 2rem)" />
+    </div>
+    <div class="process__detail" data-reveal-image data-reveal-from="right">
+      <Photo name="sawBlade" ratio={4 / 5} sizes="(min-width: 64em) 26vw, 60vw" />
+    </div>
+  </div>
+</section>
+
+<style>
+  .process__body {
+    display: grid;
+    gap: var(--space-7);
+  }
+
+  .process__sheet {
+    position: relative;
+    padding: clamp(1rem, 0.5rem + 2vw, 2rem);
+    border: 1px solid var(--line);
+    background:
+      linear-gradient(var(--line), var(--line)) 0 0 / 100% 1px no-repeat,
+      repeating-linear-gradient(0deg, rgb(199 165 139 / 0.05) 0 1px, transparent 1px 32px),
+      repeating-linear-gradient(90deg, rgb(199 165 139 / 0.05) 0 1px, transparent 1px 32px);
+  }
+
+  .process__sheet-head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-1) var(--space-4);
+    white-space: nowrap;
+    color: var(--fg-muted);
+    margin-bottom: var(--space-4);
+  }
+
+  .process__sheet :global(.process__crate) {
+    display: block;
+    width: 100%;
+    max-width: 34rem;
+    margin-inline: auto;
+  }
+
+  .process__legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-5);
+    margin-top: var(--space-4);
+    color: var(--fg-muted);
+  }
+
+  .process__legend b {
+    color: var(--fg);
+    font-weight: 500;
+    margin-right: 0.35em;
+  }
+
+  .process__steps {
+    position: relative;
+    display: grid;
+    counter-reset: step;
+  }
+
+  .step {
+    position: relative;
+    display: grid;
+    gap: var(--space-3);
+    padding: var(--space-6) 0 var(--space-6) var(--space-6);
+    border-left: 1px solid var(--line);
+  }
+
+  .step::before {
+    content: '';
+    position: absolute;
+    left: -1px;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--sb-almond);
+    transform: scaleY(var(--step-progress, 0));
+    transform-origin: top center;
+  }
+
+  .step__num {
+    font-size: 0.875rem;
+    color: var(--fg-muted);
+    letter-spacing: 0.08em;
+    transition: color var(--dur-base) var(--ease-standard);
+  }
+
+  .step.is-active .step__num {
+    color: var(--fg);
+  }
+
+  .step__text {
+    max-width: 34rem;
+  }
+
+  .step__tags {
+    color: var(--fg-muted);
+  }
+
+  /* Sem JS ou com movimento reduzido: linha da etapa visível por completo. */
+  :global(html:not(.motion-ready)) .step::before {
+    transform: none;
+    opacity: 0.6;
+  }
+
+  @media (min-width: 64em) {
+    .process__body {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: var(--col-gap);
+      align-items: start;
+    }
+
+    .process__figure {
+      grid-column: 1 / span 6;
+      position: sticky;
+      top: calc(var(--header-h) + 3vh);
+    }
+
+    .process__steps {
+      grid-column: 8 / span 5;
+    }
+
+    .step {
+      min-height: min(54vh, 30rem);
+      align-content: center;
+      padding-block: var(--space-7);
+    }
+
+    .step__num {
+      font-size: 1rem;
+    }
+  }
+
+  /* — Galeria de fabricação — */
+  .process__gallery {
+    position: relative;
+    margin-top: clamp(4rem, 3rem + 6vw, 9rem);
+  }
+
+  .process__detail {
+    position: relative;
+    z-index: 1;
+    width: 58%;
+    margin: -16% 0 0 auto;
+    border: 6px solid var(--bg);
+  }
+
+  @media (min-width: 48em) {
+    .process__gallery {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: var(--col-gap);
+    }
+
+    .process__wide {
+      grid-column: 1 / span 9;
+    }
+
+    .process__detail {
+      grid-column: 9 / -1;
+      grid-row: 1;
+      align-self: end;
+      width: auto;
+      margin: 0 0 -10% 0;
+      border-width: 8px;
+    }
+  }
+</style>

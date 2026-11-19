@@ -1,0 +1,125 @@
+---
+import SectionHead from './SectionHead.astro';
+import Photo from './Photo.astro';
+import { applications, applicationsIntro } from '../content/sections';
+
+const ratios = [3 / 4, 4 / 3, 4 / 3];
+const sizes = [
+  '(min-width: 64em) 38vw, calc(100vw - 2rem)',
+  '(min-width: 64em) 52vw, calc(100vw - 2rem)',
+  '(min-width: 64em) 34vw, calc(100vw - 2rem)',
+];
+const reveals = ['up', 'left', 'right'];
+---
+
+<section class="section surface-light applications" id="aplicacoes" aria-labelledby="aplicacoes-title">
+  <div class="container">
+    <SectionHead
+      index={applicationsIntro.index}
+      label={applicationsIntro.label}
+      title={applicationsIntro.title}
+      text={applicationsIntro.text}
+      titleId="aplicacoes-title"
+    />
+
+    <ul class="apps" role="list">
+      {
+        applications.map((app, i) => (
+          <li class:list={['app', `app--${i + 1}`]}>
+            <figure class="app__figure">
+              <div class="app__media" data-reveal-image data-reveal-from={reveals[i]}>
+                <Photo name={app.media} ratio={ratios[i]} sizes={sizes[i]} />
+              </div>
+              <figcaption class="app__caption">
+                <p class="t-label app__code">{app.code}</p>
+                <h3 class="t-h3 app__title">{app.title}</h3>
+                <p class="app__text">{app.text}</p>
+              </figcaption>
+            </figure>
+          </li>
+        ))
+      }
+    </ul>
+
+    <p class="apps__note t-label">
+      Transporte <span aria-hidden="true">/</span> Armazenagem <span aria-hidden="true">/</span> Movimentação interna
+      <span aria-hidden="true">/</span> Envio de peças e equipamentos
+    </p>
+  </div>
+</section>
+
+<style>
+  .apps {
+    display: grid;
+    gap: var(--space-8);
+  }
+
+  .app__figure {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .app__code {
+    color: var(--fg-muted);
+    margin-bottom: var(--space-3);
+  }
+
+  .app__title {
+    margin-bottom: var(--space-3);
+  }
+
+  .app__text {
+    max-width: 30rem;
+  }
+
+  .apps__note {
+    margin-top: var(--space-8);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--line-strong);
+    color: var(--fg-muted);
+    line-height: 1.9;
+  }
+
+  .apps__note span {
+    margin-inline: 0.5em;
+  }
+
+  @media (min-width: 48em) {
+    .apps {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: var(--col-gap);
+      row-gap: var(--space-8);
+    }
+
+    .app--1 {
+      grid-column: 1 / span 5;
+      grid-row: 1 / span 2;
+    }
+
+    .app--2 {
+      grid-column: 7 / span 6;
+    }
+
+    .app--3 {
+      grid-column: 7 / span 6;
+    }
+  }
+
+  @media (min-width: 64em) {
+    .app--1 {
+      grid-column: 1 / span 5;
+      position: sticky;
+      top: calc(var(--header-h) + 3rem);
+      align-self: start;
+    }
+
+    .app--2 {
+      grid-column: 7 / span 6;
+      margin-top: var(--space-9);
+    }
+
+    .app--3 {
+      grid-column: 8 / span 5;
+    }
+  }
+</style>

@@ -1,0 +1,283 @@
+---
+/**
+ * Rodapé no formato de "carimbo" de desenho técnico: o site é tratado como
+ * uma folha de projeto e o rodapé é o seu bloco de identificação.
+ */
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+import { company, navigation } from '../content/site';
+import { whatsappUrl } from '../lib/whatsapp';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer surface-deep" id="contato" aria-labelledby="contato-title">
+  <div class="container">
+    <div class="footer__lead">
+      <h2 class="t-h2 footer__title" id="contato-title">
+        Embalagens de madeira sob medida para a indústria.
+      </h2>
+      <a class="btn footer__cta" href={whatsappUrl()} target="_blank" rel="noopener" data-cta="footer">
+        <Icon name="whatsapp" class="btn__icon" />
+        <span>Solicitar orçamento</span>
+        <span class="visually-hidden">(abre o WhatsApp em nova aba)</span>
+      </a>
+    </div>
+
+    <div class="title-block">
+      <div class="tb-cell tb-cell--brand">
+        <p class="tb-key t-label">Empresa</p>
+        <Logo size="footer" />
+      </div>
+
+      <div class="tb-cell tb-cell--phone">
+        <p class="tb-key t-label">Telefone</p>
+        <a class="tb-value tb-link" href={company.phone.href}>
+          <Icon name="phone" class="tb-icon" />
+          <span>{company.phone.display}</span>
+        </a>
+      </div>
+
+      <div class="tb-cell tb-cell--wa">
+        <p class="tb-key t-label">WhatsApp</p>
+        <a class="tb-value tb-link" href={whatsappUrl()} target="_blank" rel="noopener">
+          <Icon name="whatsapp" class="tb-icon" />
+          <span>Iniciar conversa</span>
+          <span class="visually-hidden">(abre em nova aba)</span>
+        </a>
+      </div>
+
+      <div class="tb-cell tb-cell--address">
+        <p class="tb-key t-label">Endereço</p>
+        <address class="tb-value">
+          {company.address.street.replace(/, (\d)/, ', $1')}<br />
+          {company.address.district}, {company.address.city} - {company.address.state}<br />
+          CEP {company.address.postalCode}
+        </address>
+        <a class="link-line tb-map" href={company.address.mapsUrl} target="_blank" rel="noopener">
+          <span>Ver no mapa</span>
+          <span class="visually-hidden">(Google Maps, abre em nova aba)</span>
+          <Icon name="external" class="btn__arrow" />
+        </a>
+      </div>
+
+      <nav class="tb-cell tb-cell--nav" aria-label="Rodapé">
+        <p class="tb-key t-label">Navegação</p>
+        <ul role="list">
+          {
+            navigation
+              .filter((item) => item.id !== 'contato')
+              .map((item) => (
+                <li>
+                  <a href={item.href}>{item.label}</a>
+                </li>
+              ))
+          }
+          <li><a href="#orcamento">Orçamento</a></li>
+        </ul>
+      </nav>
+
+      <div class="tb-cell tb-cell--sheet" aria-hidden="true">
+        <p class="tb-key t-label">Folha</p>
+        <p class="tb-value t-mono">01 / 01</p>
+      </div>
+      <div class="tb-cell tb-cell--scale" aria-hidden="true">
+        <p class="tb-key t-label">Escala</p>
+        <p class="tb-value t-mono">1 : 1</p>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <p class="t-small">© {year} {company.name}</p>
+      <a class="link-line" href="#inicio">
+        <span>Voltar ao topo</span>
+        <Icon name="arrow-up" class="btn__arrow" />
+      </a>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    padding-block: var(--section-pad) var(--space-6);
+  }
+
+  .footer__lead {
+    display: grid;
+    gap: var(--space-6);
+    align-items: end;
+    padding-bottom: clamp(3rem, 2rem + 4vw, 6rem);
+  }
+
+  .footer__title {
+    max-width: 18ch;
+  }
+
+  .footer__cta {
+    justify-self: start;
+  }
+
+  @media (min-width: 64em) {
+    .footer__lead {
+      grid-template-columns: 1fr auto;
+    }
+  }
+
+  /* — Carimbo — */
+  .title-block {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas:
+      'brand brand'
+      'phone phone'
+      'wa wa'
+      'address address'
+      'nav nav'
+      'sheet scale';
+    border-top: 1px solid var(--line-strong);
+    border-left: 1px solid var(--line-strong);
+  }
+
+  @media (min-width: 30em) {
+    .title-block {
+      grid-template-areas:
+        'brand brand'
+        'phone wa'
+        'address address'
+        'nav nav'
+        'sheet scale';
+    }
+  }
+
+  .tb-cell--brand {
+    grid-area: brand;
+  }
+  .tb-cell--phone {
+    grid-area: phone;
+  }
+  .tb-cell--wa {
+    grid-area: wa;
+  }
+  .tb-cell--address {
+    grid-area: address;
+  }
+  .tb-cell--nav {
+    grid-area: nav;
+  }
+  .tb-cell--sheet {
+    grid-area: sheet;
+  }
+  .tb-cell--scale {
+    grid-area: scale;
+  }
+
+  .tb-cell {
+    display: grid;
+    align-content: start;
+    gap: var(--space-3);
+    padding: var(--space-5) var(--space-4);
+    border-right: 1px solid var(--line-strong);
+    border-bottom: 1px solid var(--line-strong);
+    min-width: 0;
+  }
+
+  .tb-key {
+    color: var(--fg-muted);
+  }
+
+  .tb-value {
+    font-style: normal;
+    font-weight: 500;
+  }
+
+  .tb-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-height: 44px;
+    text-decoration: none;
+    overflow-wrap: anywhere;
+  }
+
+  /* O número de telefone nunca quebra no meio. */
+  .tb-cell--phone .tb-link {
+    white-space: nowrap;
+    overflow-wrap: normal;
+  }
+
+  .tb-link:hover span:first-of-type {
+    text-decoration: underline;
+  }
+
+  .tb-cell :global(.tb-icon) {
+    width: 1.15rem;
+    height: 1.15rem;
+    flex: none;
+    color: var(--sb-almond);
+  }
+
+  .tb-map {
+    justify-self: start;
+    font-size: var(--fs-small);
+  }
+
+  .tb-cell--nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--space-5);
+  }
+
+  .tb-cell--nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    text-decoration: none;
+  }
+
+  .tb-cell--nav a:hover {
+    text-decoration: underline;
+  }
+
+  @media (min-width: 48em) {
+    .title-block {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-areas:
+        'brand brand phone wa'
+        'brand brand sheet scale'
+        'address address nav nav';
+    }
+  }
+
+  @media (min-width: 64em) {
+    .title-block {
+      grid-template-columns: 1.4fr 1fr 1fr 1.3fr 0.6fr;
+      grid-template-areas:
+        'brand phone wa address sheet'
+        'brand nav nav address scale';
+    }
+
+    .tb-cell {
+      padding: var(--space-6) var(--space-5);
+    }
+  }
+
+  .footer__bottom {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-4);
+    padding-top: var(--space-5);
+    color: var(--fg-muted);
+  }
+
+  .footer__bottom .link-line {
+    color: var(--fg);
+  }
+
+  @media (max-width: 63.99em) {
+    .site-footer {
+      padding-bottom: calc(var(--space-6) + 4.5rem + env(safe-area-inset-bottom));
+    }
+  }
+</style>

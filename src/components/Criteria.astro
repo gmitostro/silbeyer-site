@@ -1,0 +1,196 @@
+---
+import SectionHead from './SectionHead.astro';
+import { media } from '../content/media';
+import { mediaSrc, mediaSrcset } from '../lib/images';
+import { criteria, criteriaIntro } from '../content/sections';
+
+/*
+ * Composição em camadas: a mesma fotografia é dividida em cinco "tábuas".
+ * Na rolagem, as tábuas se afastam alguns pixels e revelam a estrutura
+ * técnica desenhada por baixo — a ideia de construção e proteção.
+ */
+const boards = 5;
+const item = media.lumber;
+const ratio = 4 / 5;
+const src = mediaSrc(item, 1200, ratio);
+const srcset = mediaSrcset(item, ratio, [480, 720, 960, 1200, 1600]);
+---
+
+<section class="section surface-almond criteria" id="criterios" aria-labelledby="criterios-title">
+  <div class="container">
+    <SectionHead
+      index={criteriaIntro.index}
+      label={criteriaIntro.label}
+      title={criteriaIntro.title}
+      text={criteriaIntro.text}
+      titleId="criterios-title"
+    />
+
+    <div class="criteria__body">
+      <div class="criteria__figure">
+        <div class="layers" data-layers style={`--boards:${boards}`}>
+          <svg class="layers__structure" viewBox="0 0 400 500" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+            <rect x="24" y="24" width="352" height="452" />
+            <path d="M24 24L376 476M376 24L24 476M200 24V476M24 250H376" />
+            <path class="layers__dash" d="M60 60H340V440H60Z" />
+          </svg>
+          {
+            Array.from({ length: boards }, (_, i) => (
+              <div class="layers__board" style={`--b:${i}`} data-board>
+                <img
+                  src={src}
+                  srcset={srcset}
+                  sizes="(min-width: 64em) 40vw, 90vw"
+                  width="1200"
+                  height="1500"
+                  alt={i === 0 ? item.alt : ''}
+                  aria-hidden={i === 0 ? undefined : 'true'}
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+            ))
+          }
+        </div>
+      </div>
+
+      <ol class="criteria__list" role="list">
+        {
+          criteria.map((c, i) => (
+            <li class="criterion" data-criterion>
+              <span class="criterion__rule" aria-hidden="true" data-criterion-rule />
+              <p class="criterion__num t-mono" aria-hidden="true">
+                {String(i + 1).padStart(2, '0')}
+              </p>
+              <div>
+                <h3 class="t-h3 criterion__title">{c.title}</h3>
+                <p class="criterion__text">{c.text}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </div>
+</section>
+
+<style>
+  .criteria__body {
+    display: grid;
+    gap: var(--space-8);
+  }
+
+  /* — Composição em camadas — */
+  .layers {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    max-width: 30rem;
+  }
+
+  .layers__structure {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke: var(--sb-charcoal);
+    stroke-width: 1.5;
+  }
+
+  .layers__dash {
+    stroke-dasharray: 6 6;
+    stroke-width: 1;
+  }
+
+  .layers__board {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(var(--b) * 100% / var(--boards));
+    height: calc(100% / var(--boards) - 3px);
+    overflow: hidden;
+    background: var(--sb-coffee);
+    will-change: transform;
+  }
+
+  .layers__board img {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: calc(var(--boards) * 100% + (var(--boards) * 3px));
+    top: calc(var(--b) * -100% - var(--b) * 3px);
+    max-width: none;
+    object-fit: cover;
+  }
+
+  .layers__board::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--sb-copper);
+    mix-blend-mode: soft-light;
+    opacity: 0.4;
+  }
+
+  /* — Lista de critérios — */
+  .criteria__list {
+    display: grid;
+  }
+
+  .criterion {
+    position: relative;
+    display: grid;
+    grid-template-columns: 3rem 1fr;
+    gap: var(--space-4);
+    padding-block: var(--space-5);
+  }
+
+  .criterion__rule {
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 1px;
+    background: var(--line-strong);
+    transform-origin: left center;
+  }
+
+  .criterion:last-child {
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  .criterion__num {
+    padding-top: 0.35rem;
+    font-size: 0.875rem;
+    letter-spacing: 0.08em;
+  }
+
+  .criterion__title {
+    margin-bottom: var(--space-2);
+  }
+
+  .criterion__text {
+    max-width: 34rem;
+  }
+
+  @media (min-width: 64em) {
+    .criteria__body {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: var(--col-gap);
+      align-items: start;
+    }
+
+    .criteria__figure {
+      grid-column: 1 / span 5;
+      position: sticky;
+      top: calc(var(--header-h) + 4vh);
+    }
+
+    .criteria__list {
+      grid-column: 7 / span 6;
+    }
+
+    .criterion {
+      grid-template-columns: 5rem 1fr;
+      padding-block: var(--space-6);
+    }
+  }
+</style>

@@ -1,0 +1,41 @@
+---
+import { media, type MediaKey } from '../content/media';
+import { mediaSrc, mediaSrcset } from '../lib/images';
+
+interface Props {
+  name: MediaKey;
+  /** Proporção de exibição (largura / altura). Padrão: a da própria foto. */
+  ratio?: number;
+  sizes: string;
+  priority?: boolean;
+  class?: string;
+  /** Força texto alternativo vazio (imagem decorativa repetida). */
+  decorative?: boolean;
+  cropMarks?: boolean;
+}
+
+const { name, ratio, sizes, priority = false, class: className, decorative = false, cropMarks = false } = Astro.props;
+const item = media[name];
+const displayRatio = ratio ?? item.ratio;
+const baseWidth = 1600;
+const focus = 'focus' in item ? item.focus : undefined;
+---
+
+<div
+  class:list={['photo', className]}
+  style={`--ratio:${displayRatio};${focus ? `--focus-x:${focus.x * 100}%;--focus-y:${focus.y * 100}%;` : ''}`}
+>
+  <img
+    src={mediaSrc(item, baseWidth, displayRatio)}
+    srcset={mediaSrcset(item, displayRatio)}
+    sizes={sizes}
+    width={baseWidth}
+    height={Math.round(baseWidth / displayRatio)}
+    alt={decorative ? '' : item.alt}
+    loading={priority ? 'eager' : 'lazy'}
+    decoding={priority ? 'sync' : 'async'}
+    fetchpriority={priority ? 'high' : 'auto'}
+  />
+  {cropMarks && <span class="crop-marks" aria-hidden="true" />}
+  <slot />
+</div>

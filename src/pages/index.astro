@@ -1,0 +1,55 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Intro from '../components/Intro.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import Solutions from '../components/Solutions.astro';
+import Process from '../components/Process.astro';
+import Criteria from '../components/Criteria.astro';
+import Applications from '../components/Applications.astro';
+import Quote from '../components/Quote.astro';
+import Footer from '../components/Footer.astro';
+import ActionBar from '../components/ActionBar.astro';
+import Gallery from '../components/Gallery.astro';
+import { company, seo } from '../content/site';
+import { home } from '../lib/paths';
+
+/**
+ * Dados estruturados apenas com informações confirmadas. Logotipo, imagem,
+ * horário de atendimento e redes sociais ficam de fora até serem informados;
+ * a URL entra automaticamente quando `site` for definido em astro.config.mjs.
+ */
+const localBusiness = {
+  '@context': 'https://schema.org',
+  '@type': 'LocalBusiness',
+  name: company.name,
+  description: seo.description,
+  telephone: company.phone.international,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: company.address.street,
+    addressLocality: company.address.city,
+    addressRegion: company.address.state,
+    postalCode: company.address.postalCode,
+    addressCountry: 'BR',
+  },
+  ...(Astro.site ? { url: new URL(home, Astro.site).toString() } : {}),
+};
+---
+
+<BaseLayout intro>
+  <script slot="head" type="application/ld+json" is:inline set:html={JSON.stringify(localBusiness)} />
+  <Intro slot="intro" />
+  <Header />
+  <main id="conteudo" tabindex="-1">
+    <Hero />
+    <Solutions />
+    <Process />
+    <Criteria />
+    <Applications />
+    <Gallery />
+    <Quote />
+  </main>
+  <Footer />
+  <ActionBar />
+</BaseLayout>

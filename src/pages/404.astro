@@ -1,0 +1,67 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Logo from '../components/Logo.astro';
+import Icon from '../components/Icon.astro';
+import { whatsappUrl } from '../lib/whatsapp';
+import { home } from '../lib/paths';
+---
+
+<BaseLayout title="Página não encontrada | Silbeyer Embalagens de Madeira">
+  <main id="conteudo" tabindex="-1" class="not-found surface-dark">
+    <div class="container not-found__inner">
+      <a href={home} class="not-found__brand" aria-label="Silbeyer Embalagens de Madeira — página inicial">
+        <Logo size="header" />
+      </a>
+      <p class="t-label not-found__code">Erro 404 — medida fora do padrão</p>
+      <h1 class="t-h2">Esta página não foi encontrada.</h1>
+      <p class="t-lead not-found__text">O endereço pode ter mudado. Volte para a página inicial ou fale com a Silbeyer.</p>
+      <div class="not-found__actions">
+        <a class="btn" href={home}>
+          <span>Ir para a página inicial</span>
+          <Icon name="arrow-right" class="btn__arrow" />
+        </a>
+        <a class="link-line" href={whatsappUrl()} target="_blank" rel="noopener">
+          <span>Falar no WhatsApp</span>
+          <span class="visually-hidden">(abre em nova aba)</span>
+          <Icon name="arrow-right" class="btn__arrow" />
+        </a>
+      </div>
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .not-found {
+    min-height: 100svh;
+    display: grid;
+    align-items: center;
+    padding-block: var(--space-8);
+  }
+
+  .not-found__inner {
+    display: grid;
+    gap: var(--space-5);
+    justify-items: start;
+  }
+
+  .not-found__brand {
+    margin-bottom: var(--space-7);
+    text-decoration: none;
+  }
+
+  .not-found__code {
+    color: var(--fg-muted);
+  }
+
+  .not-found__text {
+    max-width: 34rem;
+  }
+
+  .not-found__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4) var(--space-6);
+    margin-top: var(--space-3);
+  }
+</style>

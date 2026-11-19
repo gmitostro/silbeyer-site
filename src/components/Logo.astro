@@ -1,0 +1,126 @@
+---
+/**
+ * Espaço do logotipo. Usa o arquivo oficial quando `brandLogo.src` estiver
+ * definido em src/content/site.ts. Até lá, exibe uma composição tipográfica
+ * TEMPORÁRIA — ela não é, nem substitui, o logotipo oficial da Silbeyer.
+ * O logotipo nunca é distorcido: só largura OU altura é definida via CSS.
+ */
+import { brandLogo, company } from '../content/site';
+
+interface Props {
+  tone?: 'on-dark' | 'on-light';
+  size?: 'header' | 'intro' | 'footer';
+  class?: string;
+}
+
+const { tone = 'on-dark', size = 'header', class: className } = Astro.props;
+const useCompact = size === 'header' && !!brandLogo.srcCompact && tone === 'on-dark';
+const src = useCompact
+  ? brandLogo.srcCompact
+  : tone === 'on-light'
+    ? (brandLogo.srcOnLight ?? brandLogo.src)
+    : brandLogo.src;
+const width = useCompact ? brandLogo.compactWidth : brandLogo.width;
+const height = useCompact ? brandLogo.compactHeight : brandLogo.height;
+---
+
+{
+  src ? (
+    <img
+      class:list={['logo-img', `logo-img--${size}`, className]}
+      src={src}
+      width={width}
+      height={height}
+      alt={company.name}
+    />
+  ) : (
+    <span class:list={['wordmark', `wordmark--${size}`, `wordmark--${tone}`, className]} data-temporary-logo>
+      <span class="wordmark__name">Silbeyer</span>{' '}
+      <span class="wordmark__desc">{company.descriptor}</span>
+    </span>
+  )
+}
+
+<style>
+  .logo-img {
+    width: auto;
+    object-fit: contain;
+  }
+
+  .logo-img--header {
+    height: 2.25rem;
+  }
+
+  @media (min-width: 64em) {
+    .logo-img--header {
+      height: 2.75rem;
+    }
+  }
+
+  /* Abertura e rodapé usam a versão completa: o tamanho vem da largura, para a
+     linha "Embalagens de Madeira" continuar legível. */
+  .logo-img--intro {
+    width: clamp(16rem, 42vw, 28rem);
+    height: auto;
+  }
+
+  .logo-img--footer {
+    width: min(100%, 17rem);
+    height: auto;
+  }
+
+  .wordmark {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 0.3em;
+    line-height: 1;
+    color: var(--sb-beige);
+  }
+
+  .wordmark--on-light {
+    color: var(--sb-charcoal);
+  }
+
+  .wordmark__name {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    font-stretch: 88%;
+    font-size: 1.3rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .wordmark__desc {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    opacity: 0.88;
+  }
+
+  .wordmark--intro {
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .wordmark--intro .wordmark__name {
+    font-size: clamp(2.2rem, 1.4rem + 4vw, 4.4rem);
+    letter-spacing: 0.2em;
+    margin-right: -0.2em; /* compensa o espaçamento final para centralizar */
+  }
+
+  .wordmark--intro .wordmark__desc {
+    font-size: clamp(0.72rem, 0.65rem + 0.3vw, 0.9rem);
+    letter-spacing: 0.32em;
+    margin-right: -0.32em;
+  }
+
+  .wordmark--footer .wordmark__name {
+    font-size: 1.6rem;
+  }
+
+  .wordmark--footer .wordmark__desc {
+    font-size: 0.6875rem;
+  }
+</style>

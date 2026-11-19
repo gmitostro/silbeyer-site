@@ -1,0 +1,62 @@
+---
+/**
+ * Barra de ação no celular: aparece depois do hero e some quando a seção de
+ * orçamento ou o rodapé estão na tela (onde o mesmo contato já está visível).
+ */
+import Icon from './Icon.astro';
+import { company } from '../content/site';
+import { whatsappUrl } from '../lib/whatsapp';
+---
+
+<div class="action-bar surface-dark" data-action-bar>
+  <a class="btn action-bar__main" href={whatsappUrl()} target="_blank" rel="noopener" data-cta="action-bar">
+    <Icon name="whatsapp" class="btn__icon" />
+    <span>Solicitar orçamento</span>
+    <span class="visually-hidden">(abre o WhatsApp em nova aba)</span>
+  </a>
+  <a class="btn btn--ghost action-bar__call" href={company.phone.href} aria-label={`Ligar para ${company.phone.display}`}>
+    <Icon name="phone" class="btn__icon" />
+  </a>
+</div>
+
+<style>
+  .action-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: var(--z-actionbar);
+    display: flex;
+    gap: var(--space-2);
+    padding: 0.625rem var(--gutter) calc(0.625rem + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--line);
+    transform: translateY(110%);
+    visibility: hidden;
+    transition:
+      transform var(--dur-slow) var(--ease-out),
+      visibility 0s linear var(--dur-slow);
+  }
+
+  .action-bar.is-visible {
+    transform: none;
+    visibility: visible;
+    transition:
+      transform var(--dur-slow) var(--ease-out),
+      visibility 0s;
+  }
+
+  .action-bar__main {
+    flex: 1;
+  }
+
+  .action-bar__call {
+    width: 3.25rem;
+    padding: 0;
+  }
+
+  @media (min-width: 64em) {
+    .action-bar {
+      display: none;
+    }
+  }
+</style>
