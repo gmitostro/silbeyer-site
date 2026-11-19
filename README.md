@@ -17,7 +17,15 @@ npm run preview    # serve o /dist em http://localhost:4321
 npm run check      # verificação de tipos (astro check)
 ```
 
-O conteúdo de `dist/` pode ser publicado em qualquer hospedagem estática (Netlify, Vercel, Cloudflare Pages, servidor próprio).
+## Publicação (GitHub Pages)
+
+O site está no ar em **https://gmitostro.github.io/silbeyer-site/** (repositório `gmitostro/silbeyer-site`).
+Cada envio (`git push`) para a branch `main` gera e publica o site sozinho, pelo fluxo `.github/workflows/deploy.yml` (aba **Actions** do repositório).
+O fluxo informa ao Astro o endereço e a subpasta do Pages (`SITE_URL` e `BASE_PATH`); por isso todo caminho de arquivo em `/public` passa por `asset()` (`src/lib/paths.ts`).
+
+Ficam fora do repositório (ver `.gitignore`): fotos originais em HEIC, downloads do Drive, `assets-originais/` e os estudos de marca em `SILBEYER_BRANDING/`.
+
+O conteúdo de `dist/` também pode ser publicado em qualquer hospedagem estática (Netlify, Vercel, Cloudflare Pages, servidor próprio).
 Quando o domínio for definido, preencha `site` em `astro.config.mjs` — isso ativa a URL canônica, o `og:url` e a URL nos dados estruturados (`LocalBusiness`, em `src/pages/index.astro`).
 
 ## Onde editar
